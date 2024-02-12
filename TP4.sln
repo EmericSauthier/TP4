@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiFilm", "ApiFilm\ApiFilm.csproj", "{197E97FC-A17A-418E-83D9-03A03FB07133}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiFilm", "ApiFilm\ApiFilm.csproj", "{197E97FC-A17A-418E-83D9-03A03FB07133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiFilmTests", "ApiFilmTests\ApiFilmTests.csproj", "{95317912-28BD-40A6-9626-F42752930BC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{197E97FC-A17A-418E-83D9-03A03FB07133}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{197E97FC-A17A-418E-83D9-03A03FB07133}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{197E97FC-A17A-418E-83D9-03A03FB07133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95317912-28BD-40A6-9626-F42752930BC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95317912-28BD-40A6-9626-F42752930BC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95317912-28BD-40A6-9626-F42752930BC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95317912-28BD-40A6-9626-F42752930BC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

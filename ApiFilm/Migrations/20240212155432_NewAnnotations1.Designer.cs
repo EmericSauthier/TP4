@@ -3,6 +3,7 @@ using System;
 using ApiFilm.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ApiFilm.Migrations
 {
     [DbContext(typeof(FilmRatingsDBContext))]
-    partial class FilmRatingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240212155432_NewAnnotations1")]
+    partial class NewAnnotations1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,6 +122,7 @@ namespace ApiFilm.Migrations
                         .HasColumnName("utl_mail");
 
                     b.Property<string>("Mobile")
+                        .IsRequired()
                         .HasColumnType("char(10)")
                         .HasColumnName("utl_mobile");
 
@@ -140,7 +144,6 @@ namespace ApiFilm.Migrations
                         .HasColumnName("utl_prenom");
 
                     b.Property<string>("Pwd")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("utl_pwd");
