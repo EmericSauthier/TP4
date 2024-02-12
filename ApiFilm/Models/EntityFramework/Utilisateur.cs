@@ -47,7 +47,7 @@ public partial class Utilisateur
 
     [Column("utl_pays")]
     [StringLength(50)]
-    public string? Pays { get; set; } = "France";
+    public string? Pays { get; set; }
 
     [Column("utl_latitude")]
     public float? Latitude { get; set; }

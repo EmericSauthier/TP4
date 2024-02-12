@@ -20,14 +20,13 @@ public partial class Notation
     public int FilmId { get; set; }
 
     [Column("not_note")]
-    [Range(0,5)]
     public int Note { get; set; }
 
     [ForeignKey("UtilisateurId")]
-    [InverseProperty("UtilisateurNotant")]
+    [InverseProperty("NotesUtilisateur")]
     public virtual Utilisateur UtilisateurNotant { get; set; } = null!;
 
     [ForeignKey("FilmId")]
-    [InverseProperty("FilmNote")]
+    [InverseProperty("NotesFilm")]
     public virtual Film FilmNote { get; set; } = null!;
 }

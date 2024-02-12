@@ -19,7 +19,7 @@ public partial class Film
     public string Titre { get; set; } = null!;
 
     [Column("flm_resume")]
-    public string Resume { get; set; } = null!;
+    public string? Resume { get; set; }
 
     [Column("flm_datesortie")]
     public DateTime DateSortie { get; set; }
