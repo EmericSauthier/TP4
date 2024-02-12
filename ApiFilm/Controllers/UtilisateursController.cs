@@ -32,14 +32,36 @@ namespace ApiFilm.Controllers
         }
 
         // GET: api/Utilisateurs/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Utilisateur>> GetUtilisateur(int id)
+        [Route("[action]/{id}")]
+        [HttpGet]
+        [ActionName("GetUtilisateurById")]
+        public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
           if (_context.Utilisateurs == null)
           {
               return NotFound();
           }
             var utilisateur = await _context.Utilisateurs.FindAsync(id);
+
+            if (utilisateur == null)
+            {
+                return NotFound();
+            }
+
+            return utilisateur;
+        }
+
+        // GET: api/Utilisateurs/abcd@abcd.com
+        [Route("[action]/{email}")]
+        [HttpGet]
+        [ActionName("GetUtilisateurByEmail")]
+        public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
+        {
+            if (_context.Utilisateurs == null)
+            {
+                return NotFound();
+            }
+            var utilisateur = await _context.Utilisateurs.Where(u => u.Mail == email).FirstAsync();
 
             if (utilisateur == null)
             {
