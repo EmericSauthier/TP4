@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ApiFilm.Models.EntityFramework;
+using ApiFilm.Models.DataManager;
 
 namespace ApiFilm.Controllers
 {
@@ -13,67 +14,52 @@ namespace ApiFilm.Controllers
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
-        private readonly FilmRatingsDBContext _context;
+        private readonly UtilisateurManager utilisateurManager;
+        //private readonly FilmRatingsDBContext _context;
 
-        public UtilisateursController(FilmRatingsDBContext context)
+        public UtilisateursController(UtilisateurManager userManager)
         {
-            _context = context;
+            utilisateurManager = userManager;
         }
 
         // GET: api/Utilisateurs
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Utilisateur>>> GetUtilisateurs()
         {
-          if (_context.Utilisateurs == null)
-          {
-              return NotFound();
-          }
-            return await _context.Utilisateurs.ToListAsync();
+            return utilisateurManager.GetAll();
         }
 
         // GET: api/Utilisateurs/5
-        [Route("[action]/{id}")]
         [HttpGet]
-        [ActionName("GetUtilisateurById")]
+        [Route("[action]/{id}")]
+        [ActionName("GetById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
-          if (_context.Utilisateurs == null)
-          {
-              return NotFound();
-          }
-            var utilisateur = await _context.Utilisateurs.FindAsync(id);
-
+            var utilisateur = utilisateurManager.GetById(id);
+            //var utilisateur = await _context.Utilisateurs.FindAsync(id);
             if (utilisateur == null)
             {
                 return NotFound();
             }
-
             return utilisateur;
         }
 
-        // GET: api/Utilisateurs/abcd@abcd.com
-        [Route("[action]/{email}")]
+        // GET: api/Utilisateurs/toto@titi.fr
         [HttpGet]
-        [ActionName("GetUtilisateurByEmail")]
+        [Route("[action]/{email}")]
+        [ActionName("GetByEmail")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
         {
-            if (_context.Utilisateurs == null)
-            {
-                return NotFound();
-            }
-            var utilisateur = await _context.Utilisateurs.Where(u => u.Mail == email).FirstAsync();
-
+            var utilisateur = utilisateurManager.GetByString(email);
+            //var utilisateur = await _context.Utilisateurs.FirstOrDefaultAsync(e => e.Mail.ToUpper() == email.ToUpper());
             if (utilisateur == null)
             {
                 return NotFound();
             }
-
             return utilisateur;
         }
 
@@ -81,34 +67,24 @@ namespace ApiFilm.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PutUtilisateur(int id, Utilisateur utilisateur)
         {
             if (id != utilisateur.UtilisateurId)
             {
                 return BadRequest();
             }
-
-            _context.Entry(utilisateur).State = EntityState.Modified;
-
-            try
+            var userToUpdate = utilisateurManager.GetById(id);
+            if (userToUpdate == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!UtilisateurExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                utilisateurManager.Update(userToUpdate.Value, utilisateur);
+                return NoContent();
             }
-
-            return NoContent();
         }
 
         // POST: api/Utilisateurs
@@ -122,16 +98,8 @@ namespace ApiFilm.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            if (_context.Utilisateurs == null)
-            {
-                return Problem("Entity set 'FilmRatingsDBContext.Utilisateurs'  is null.");
-            }
-
-            _context.Utilisateurs.Add(utilisateur);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUtilisateur", new { id = utilisateur.UtilisateurId }, utilisateur);
+            utilisateurManager.Add(utilisateur);
+            return CreatedAtAction("GetById", new { id = utilisateur.UtilisateurId }, utilisateur); // GetById : nom de l’action
         }
 
         // DELETE: api/Utilisateurs/5
@@ -140,25 +108,18 @@ namespace ApiFilm.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteUtilisateur(int id)
         {
-            if (_context.Utilisateurs == null)
-            {
-                return NotFound();
-            }
-            var utilisateur = await _context.Utilisateurs.FindAsync(id);
+            var utilisateur = utilisateurManager.GetById(id);
             if (utilisateur == null)
             {
                 return NotFound();
             }
-
-            _context.Utilisateurs.Remove(utilisateur);
-            await _context.SaveChangesAsync();
-
+            utilisateurManager.Delete(utilisateur.Value);
             return NoContent();
         }
 
-        private bool UtilisateurExists(int id)
-        {
-            return (_context.Utilisateurs?.Any(e => e.UtilisateurId == id)).GetValueOrDefault();
-        }
+        //private bool UtilisateurExists(int id)
+        //{
+        // return _context.Utilisateurs.Any(e => e.UtilisateurId == id);
+        //}
     }
 }
