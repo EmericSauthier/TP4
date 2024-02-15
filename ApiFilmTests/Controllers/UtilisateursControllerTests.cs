@@ -193,6 +193,7 @@ namespace ApiFilm.Controllers.Tests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void DeleteUtilisateurTest_OK()
         {
             Utilisateur user = new Utilisateur()
@@ -217,10 +218,8 @@ namespace ApiFilm.Controllers.Tests
 
             var resultDelete = _controller.DeleteUtilisateur(id).Result;
 
-            var resultWhere = _context.Utilisateurs.Where(u => u.UtilisateurId == id);
-            var resultGetById = _controller.GetUtilisateurById(id).Result;
-
             Assert.AreEqual(StatusCodes.Status204NoContent, ((NoContentResult)resultDelete).StatusCode, "Pas de code 204");
+            _context.Utilisateurs.Where(u => u.UtilisateurId == id).First();
         }
     }
 }
