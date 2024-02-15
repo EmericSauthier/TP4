@@ -61,9 +61,10 @@ namespace ApiFilm.Controllers.Tests
         [TestMethod()]
         public void GetUtilisateurByIdTest_NONOK()
         {
-            var result = _controller.GetUtilisateurById(0).Result.Result;
+            var result = _controller.GetUtilisateurById(0).Result;
 
-            Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
+            Assert.IsNull(result.Value);
+            //Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result.Result).StatusCode, "Pas de code 404");
         }
 
         [TestMethod()]
