@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ApiFilm.Models.EntityFramework;
 using ApiFilm.Models.DataManager;
+using ApiFilm.Models.Repository;
 
 namespace ApiFilm.Controllers
 {
@@ -14,19 +15,18 @@ namespace ApiFilm.Controllers
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
-        private readonly UtilisateurManager utilisateurManager;
+        private readonly IDataRepository<Utilisateur> dataRepository;
         //private readonly FilmRatingsDBContext _context;
-
-        public UtilisateursController(UtilisateurManager userManager)
+        public UtilisateursController(IDataRepository<Utilisateur> dataRepo)
         {
-            utilisateurManager = userManager;
+            dataRepository = dataRepo;
         }
 
         // GET: api/Utilisateurs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Utilisateur>>> GetUtilisateurs()
         {
-            return utilisateurManager.GetAll();
+            return dataRepository.GetAll();
         }
 
         // GET: api/Utilisateurs/5
@@ -37,7 +37,7 @@ namespace ApiFilm.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
-            var utilisateur = utilisateurManager.GetById(id);
+            var utilisateur = dataRepository.GetById(id);
             //var utilisateur = await _context.Utilisateurs.FindAsync(id);
             if (utilisateur == null)
             {
@@ -54,7 +54,7 @@ namespace ApiFilm.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
         {
-            var utilisateur = utilisateurManager.GetByString(email);
+            var utilisateur = dataRepository.GetByString(email);
             //var utilisateur = await _context.Utilisateurs.FirstOrDefaultAsync(e => e.Mail.ToUpper() == email.ToUpper());
             if (utilisateur == null)
             {
@@ -75,14 +75,14 @@ namespace ApiFilm.Controllers
             {
                 return BadRequest();
             }
-            var userToUpdate = utilisateurManager.GetById(id);
+            var userToUpdate = dataRepository.GetById(id);
             if (userToUpdate == null)
             {
                 return NotFound();
             }
             else
             {
-                utilisateurManager.Update(userToUpdate.Value, utilisateur);
+                dataRepository.Update(userToUpdate.Value, utilisateur);
                 return NoContent();
             }
         }
@@ -98,7 +98,7 @@ namespace ApiFilm.Controllers
             {
                 return BadRequest(ModelState);
             }
-            utilisateurManager.Add(utilisateur);
+            dataRepository.Add(utilisateur);
             return CreatedAtAction("GetById", new { id = utilisateur.UtilisateurId }, utilisateur); // GetById : nom de l’action
         }
 
@@ -108,12 +108,12 @@ namespace ApiFilm.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteUtilisateur(int id)
         {
-            var utilisateur = utilisateurManager.GetById(id);
+            var utilisateur = dataRepository.GetById(id);
             if (utilisateur == null)
             {
                 return NotFound();
             }
-            utilisateurManager.Delete(utilisateur.Value);
+            dataRepository.Delete(utilisateur.Value);
             return NoContent();
         }
 
