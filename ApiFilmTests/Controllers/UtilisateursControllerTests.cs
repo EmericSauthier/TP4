@@ -193,7 +193,7 @@ namespace ApiFilm.Controllers.Tests
         }
 
         [TestMethod()]
-        public void DeleteUtilisateurTest()
+        public void DeleteUtilisateurTest_OK()
         {
             Utilisateur user = new Utilisateur()
             {
