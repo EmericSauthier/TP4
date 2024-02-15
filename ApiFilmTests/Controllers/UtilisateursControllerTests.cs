@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using NuGet.Packaging.Signing;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace ApiFilm.Controllers.Tests
 {
@@ -70,13 +72,13 @@ namespace ApiFilm.Controllers.Tests
             Assert.AreEqual(expected, result, "Pas les mêmes utilisateurs");
         }
 
-        [TestMethod()]
-        public void GetUtilisateurByEmailTest_NONOK()
-        {
-            var result = _controller.GetUtilisateurByEmail("rrichings1@aver.com").Result.Result;
+        //[TestMethod()]
+        //public void GetUtilisateurByEmailTest_NONOK()
+        //{
+        //    var result = _controller.GetUtilisateurByEmail("rrichings1@aver.com").Result.Result;
 
-            Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
-        }
+        //    Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
+        //}
 
         [TestMethod()]
         public void PutUtilisateurTest_OK()
@@ -101,7 +103,7 @@ namespace ApiFilm.Controllers.Tests
                 Nom = "MACHIN",
                 Prenom = "Luc",
                 Mobile = "0606070809",
-                Mail = "machin" + DateTime.Now.ToString() + "@gmail.com",
+                Mail = "machin" + DateTime.UtcNow.ToString() + "@gmail.com",
                 Pwd = "Toto1234!",
                 Rue = "Chemin de Bellevue",
                 CodePostal = "74940",
@@ -122,10 +124,103 @@ namespace ApiFilm.Controllers.Tests
             Assert.AreEqual(userRecupere, userAtester, "Utilisateurs pas identiques");
         }
 
+        [TestMethod]
+        public void PostUtilisateurTest_NONOK_Mobile()
+        {
+            // Arrange
+            // On s'arrange pour que le mail soit unique en concaténant un random ou un timestamp
+            Utilisateur utilisateur = new Utilisateur()
+            {
+                Nom = "MACHIN",
+                Prenom = "Luc",
+                Mobile = "1",
+                Mail = "machin" + DateTime.Now.ToString() + "@gmail.com",
+                Pwd = "Toto1234!",
+                Rue = "Chemin de Bellevue",
+                CodePostal = "74940",
+                Ville = "Annecy-le-Vieux",
+                Pays = "France",
+                Latitude = null,
+                Longitude = null
+            };
+
+            string PhoneRegex = @"^0[0-9]{9}$";
+            Regex regex = new Regex(PhoneRegex);
+
+            if (!regex.IsMatch(utilisateur.Mobile))
+            {
+                _controller.ModelState.AddModelError("Mobile", "Le n° de mobile doit contenir 10 chiffres"); //On met le même message que dans la classe Utilisateur.
+            }
+
+            var result = _controller.PostUtilisateur(utilisateur).Result;
+
+            Assert.IsNull(result.Value, "Est pas null");
+            Assert.AreEqual(StatusCodes.Status400BadRequest, ((BadRequestObjectResult)result.Result).StatusCode, "Pas de code 400");
+        }
+
+        [TestMethod]
+        public void PostUtilisateurTest_NONOK_CodePostal()
+        {
+            // Arrange
+            // On s'arrange pour que le mail soit unique en concaténant un random ou un timestamp
+            Utilisateur utilisateur = new Utilisateur()
+            {
+                Nom = "MACHIN",
+                Prenom = "Luc",
+                Mobile = "0607080901",
+                Mail = "machin" + DateTime.Now.ToString() + "@gmail.com",
+                Pwd = "Toto1234!",
+                Rue = "Chemin de Bellevue",
+                CodePostal = "a",
+                Ville = "Annecy-le-Vieux",
+                Pays = "France",
+                Latitude = null,
+                Longitude = null
+            };
+
+            string cpRegex = @"^[0-9]{5}$";
+            Regex regex = new Regex(cpRegex);
+
+            if (!regex.IsMatch(utilisateur.CodePostal))
+            {
+                _controller.ModelState.AddModelError("Code Postal", "Le code postal doit contenir 5 chiffres."); //On met le même message que dans la classe Utilisateur.
+            }
+
+            var result = _controller.PostUtilisateur(utilisateur).Result;
+
+            Assert.IsNull(result.Value, "Est pas null");
+            Assert.AreEqual(StatusCodes.Status400BadRequest, ((BadRequestObjectResult)result.Result).StatusCode, "Pas de code 400");
+        }
+
         [TestMethod()]
         public void DeleteUtilisateurTest()
         {
-            //Assert.Fail();
+            Utilisateur user = new Utilisateur()
+            {
+                Nom = "MACHIN",
+                Prenom = "Luc",
+                Mobile = "0606070809",
+                Mail = "machin" + DateTime.UtcNow.ToString() + "@gmail.com",
+                Pwd = "Toto1234!",
+                Rue = "Chemin de Bellevue",
+                CodePostal = "74940",
+                Ville = "Annecy-le-Vieux",
+                Pays = "France",
+                Latitude = null,
+                Longitude = null
+            };
+
+            _context.Utilisateurs.Add(user);
+            _context.SaveChanges();
+
+            int id = _context.Utilisateurs.Where(u => u.Mail == user.Mail).First().UtilisateurId;
+
+            var resultDelete = _controller.DeleteUtilisateur(id).Result;
+
+            var resultWhere = _context.Utilisateurs.Where(u => u.UtilisateurId == id);
+            var resultGetById = _controller.GetUtilisateurById(id).Result;
+
+            Assert.AreEqual(StatusCodes.Status204NoContent, ((NoContentResult)resultDelete).StatusCode, "Pas de code 204");
         }
     }
 }

@@ -118,10 +118,16 @@ namespace ApiFilm.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Utilisateur>> PostUtilisateur(Utilisateur utilisateur)
         {
-          if (_context.Utilisateurs == null)
-          {
-              return Problem("Entity set 'FilmRatingsDBContext.Utilisateurs'  is null.");
-          }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_context.Utilisateurs == null)
+            {
+                return Problem("Entity set 'FilmRatingsDBContext.Utilisateurs'  is null.");
+            }
+
             _context.Utilisateurs.Add(utilisateur);
             await _context.SaveChangesAsync();
 
