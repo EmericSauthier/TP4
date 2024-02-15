@@ -396,5 +396,51 @@ namespace ApiFilm.Controllers.Tests
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
         }
+
+        [TestMethod]
+        public void PutUtilisateurTest_AvecMoq()
+        {
+            // Arrange
+            Utilisateur user = new Utilisateur
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "clilleymd@last.fm",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = 46.344795F,
+                Longitude = 6.4885845F
+            };
+            Utilisateur userModif = new Utilisateur
+            {
+                UtilisateurId = 1,
+                Nom = "Test",
+                Prenom = "Update",
+                Mobile = "0653930778",
+                Mail = "clilleymd@last.fm",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = 46.344795F,
+                Longitude = 6.4885845F
+            };
+
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            mockRepository.Setup(x => x.GetByIdAsync(1).Result).Returns(user);
+            var userController = new UtilisateursController(mockRepository.Object);
+
+            // Act
+            var actionResult = userController.PutUtilisateur(1, userModif).Result;
+
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
+        }
     }
 }
