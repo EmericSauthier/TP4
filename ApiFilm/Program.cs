@@ -1,4 +1,6 @@
+using ApiFilm.Models.DataManager;
 using ApiFilm.Models.EntityFramework;
+using ApiFilm.Models.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiFilm
@@ -16,6 +18,7 @@ namespace ApiFilm
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddScoped<IDataRepository<Utilisateur>, UtilisateurManager>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
