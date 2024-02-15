@@ -79,9 +79,9 @@ namespace ApiFilm.Controllers.Tests
         {
             UtilisateursController controller = new UtilisateursController(_context);
 
-            var result = controller.GetUtilisateurByEmail("a@a.fr").Status;
+            var result = controller.GetUtilisateurByEmail("a@a.fr").Result.Result;
 
-            //Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
+            Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
         }
 
         [TestMethod()]
