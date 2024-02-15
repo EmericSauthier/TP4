@@ -62,7 +62,7 @@ public partial class Utilisateur
     public float? Longitude { get; set; }
 
     [Column("utl_datecreation")]
-    public DateTime DateCreation { get; set; } = DateTime.Now;
+    public DateTime DateCreation { get; set; }
 
     [InverseProperty("UtilisateurNotant")]
     public virtual ICollection<Notation> NotesUtilisateur { get; set; } = new List<Notation>();
