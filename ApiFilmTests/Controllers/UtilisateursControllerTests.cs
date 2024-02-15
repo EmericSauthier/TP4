@@ -15,55 +15,87 @@ namespace ApiFilm.Controllers.Tests
     [TestClass()]
     public class UtilisateursControllerTests
     {
-        private UtilisateursController _controller;
+        private FilmRatingsDBContext _context;
 
         public UtilisateursControllerTests()
         {
             var builder = new DbContextOptionsBuilder<FilmRatingsDBContext>().UseNpgsql("Server=localhost;port=5432;Database=FilmRatingsDB; uid=postgres; password=postgres;");
-            FilmRatingsDBContext context = new FilmRatingsDBContext(builder.Options);
-            _controller = new UtilisateursController(context);
+            _context = new FilmRatingsDBContext(builder.Options);
         }
 
         [TestMethod()]
         public void UtilisateursControllerTest_OK()
         {
-            Assert.IsNotNull(_controller, "Le controlleur est null.");
+            UtilisateursController controller = new UtilisateursController(_context);
+
+            Assert.IsNotNull(controller, "Le controlleur est null.");
         }
 
         [TestMethod()]
         public void GetUtilisateursTest_OK()
         {
-            var results = _controller.GetUtilisateurs().Result;
+            UtilisateursController controller = new UtilisateursController(_context);
+            var expected = _context.Utilisateurs.ToList();
 
-            Assert.IsNotNull(results.Value, "Pas de résultats.");
-            Assert.AreEqual(12, results.Value.Count(), "Listes non égales");
+            var results = controller.GetUtilisateurs().Result.Value;
+
+            CollectionAssert.AreEqual(expected, results.ToList(), "Pas les mêmes listes");
         }
 
         [TestMethod()]
         public void GetUtilisateurByIdTest_OK()
         {
-            var result = _controller.GetUtilisateurById(1).Result;
+            UtilisateursController controller = new UtilisateursController(_context);
+            Utilisateur expected = _context.Utilisateurs.Where(u => u.UtilisateurId == 1).First();
 
+            var result = controller.GetUtilisateurById(1).Result.Value;
+
+            Assert.AreEqual(expected, result, "Pas les mêmes utilisateurs");
         }
 
         [TestMethod()]
         public void GetUtilisateurByIdTest_NONOK()
         {
-            var result = _controller.GetUtilisateurById(0).Result.Result;
+            UtilisateursController controller = new UtilisateursController(_context);
+
+            var result = controller.GetUtilisateurById(0).Result.Result;
 
             Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
         }
 
         [TestMethod()]
-        public void GetUtilisateurByEmailTest()
+        public void GetUtilisateurByEmailTest_OK()
         {
-            //Assert.Fail();
+            UtilisateursController controller = new UtilisateursController(_context);
+            Utilisateur expected = _context.Utilisateurs.Where(u => u.UtilisateurId == 1).First();
+
+            var result = controller.GetUtilisateurByEmail(expected.Mail).Result.Value;
+
+            Assert.AreEqual(expected, result, "Pas les mêmes utilisateurs");
         }
 
         [TestMethod()]
-        public void PutUtilisateurTest()
+        public void GetUtilisateurByEmailTest_NONOK()
         {
-            //Assert.Fail();
+            UtilisateursController controller = new UtilisateursController(_context);
+
+            var result = controller.GetUtilisateurByEmail("a@a.fr").Status;
+
+            //Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result).StatusCode, "Pas de code 404");
+        }
+
+        [TestMethod()]
+        public void PutUtilisateurTest_OK()
+        {
+            UtilisateursController controller = new UtilisateursController(_context);
+            Utilisateur expected = _context.Utilisateurs.Where(u => u.UtilisateurId == 1).First();
+            expected.Pwd = "Password1234€";
+
+            var result = controller.PutUtilisateur(1, expected).Result;
+            Utilisateur resultUser = controller.GetUtilisateurById(1).Result.Value;
+
+            Assert.AreEqual(StatusCodes.Status204NoContent, ((NoContentResult)result).StatusCode, "Pas de code 204");
+            Assert.AreEqual(expected, resultUser, "Pas les mêmes utilisateurs");
         }
 
         [TestMethod()]
