@@ -14,24 +14,24 @@ namespace ApiFilm.Models.DataManager
             filmsDbContext = context;
         }
 
-        public ActionResult<IEnumerable<Utilisateur>> GetAll()
+        public async Task<ActionResult<IEnumerable<Utilisateur>>> GetAllAsync()
         {
-            return filmsDbContext.Utilisateurs.ToList();
+            return await filmsDbContext.Utilisateurs.ToListAsync();
         }
-        public ActionResult<Utilisateur> GetById(int id)
+        public async Task<ActionResult<Utilisateur>> GetByIdAsync(int id)
         {
-            return filmsDbContext.Utilisateurs.FirstOrDefault(u => u.UtilisateurId == id);
+            return await filmsDbContext.Utilisateurs.FirstOrDefaultAsync(u => u.UtilisateurId == id);
         }
-        public ActionResult<Utilisateur> GetByString(string mail)
+        public async Task<ActionResult<Utilisateur>> GetByStringAsync(string mail)
         {
-            return filmsDbContext.Utilisateurs.FirstOrDefault(u => u.Mail.ToUpper() == mail.ToUpper());
+            return await filmsDbContext.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToUpper() == mail.ToUpper());
         }
-        public void Add(Utilisateur entity)
+        public async Task AddAsync(Utilisateur entity)
         {
-            filmsDbContext.Utilisateurs.Add(entity);
-            filmsDbContext.SaveChanges();
+            await filmsDbContext.Utilisateurs.AddAsync(entity);
+            await filmsDbContext.SaveChangesAsync();
         }
-        public void Update(Utilisateur utilisateur, Utilisateur entity)
+        public async Task UpdateAsync(Utilisateur utilisateur, Utilisateur entity)
         {
             filmsDbContext.Entry(utilisateur).State = EntityState.Modified;
             utilisateur.UtilisateurId = entity.UtilisateurId;
@@ -47,12 +47,12 @@ namespace ApiFilm.Models.DataManager
             utilisateur.Pwd = entity.Pwd;
             utilisateur.Mobile = entity.Mobile;
             utilisateur.NotesUtilisateur = entity.NotesUtilisateur;
-            filmsDbContext.SaveChanges();
+            await filmsDbContext.SaveChangesAsync();
         }
-        public void Delete(Utilisateur utilisateur)
+        public async Task DeleteAsync(Utilisateur utilisateur)
         {
             filmsDbContext.Utilisateurs.Remove(utilisateur);
-            filmsDbContext.SaveChanges();
+            await filmsDbContext.SaveChangesAsync();
         }
     }
 }

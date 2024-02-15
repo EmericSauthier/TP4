@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using NuGet.Packaging.Signing;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using ApiFilm.Models.DataManager;
+using ApiFilm.Models.Repository;
 
 namespace ApiFilm.Controllers.Tests
 {
@@ -20,12 +22,14 @@ namespace ApiFilm.Controllers.Tests
     {
         private FilmRatingsDBContext _context;
         private UtilisateursController _controller;
+        private IDataRepository<Utilisateur> _dataRepository;
 
         public UtilisateursControllerTests()
         {
             var builder = new DbContextOptionsBuilder<FilmRatingsDBContext>().UseNpgsql("Server=localhost;port=5432;Database=FilmRatingsDB; uid=postgres; password=postgres;");
             _context = new FilmRatingsDBContext(builder.Options);
-            _controller = new UtilisateursController(_context);
+            _dataRepository = new UtilisateurManager(_context);
+            _controller = new UtilisateursController(_dataRepository);
         }
 
         [TestMethod()]
