@@ -64,7 +64,6 @@ namespace ApiFilm.Controllers.Tests
             var result = _controller.GetUtilisateurById(0).Result;
 
             Assert.IsNull(result.Value);
-            //Assert.AreEqual(StatusCodes.Status404NotFound, ((NotFoundResult)result.Result).StatusCode, "Pas de code 404");
         }
 
         [TestMethod()]
