@@ -22,11 +22,11 @@ public partial class Notation
     [Column("not_note")]
     public int Note { get; set; }
 
-    [ForeignKey("UtilisateurId")]
-    [InverseProperty("NotesUtilisateur")]
-    public virtual Utilisateur UtilisateurNotant { get; set; } = null!;
-
-    [ForeignKey("FilmId")]
-    [InverseProperty("NotesFilm")]
+    [ForeignKey(nameof(FilmId))]
+    [InverseProperty(nameof(Film.NotesFilm))]
     public virtual Film FilmNote { get; set; } = null!;
+
+    [ForeignKey(nameof(UtilisateurId))]
+    [InverseProperty(nameof(Utilisateur.NotesUtilisateur))]
+    public virtual Utilisateur UtilisateurNotant { get; set; } = null!;
 }

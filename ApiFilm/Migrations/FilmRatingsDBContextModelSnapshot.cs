@@ -31,16 +31,15 @@ namespace ApiFilm.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FilmId"));
 
-                    b.Property<DateTime>("DateSortie")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateTime?>("DateSortie")
+                        .HasColumnType("date")
                         .HasColumnName("flm_datesortie");
 
-                    b.Property<decimal>("Duree")
-                        .HasColumnType("numeric(3,0)")
+                    b.Property<decimal?>("Duree")
+                        .HasColumnType("numeric(3, 0)")
                         .HasColumnName("flm_duree");
 
                     b.Property<string>("Genre")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("flm_genre");
@@ -56,7 +55,7 @@ namespace ApiFilm.Migrations
                         .HasColumnName("flm_titre");
 
                     b.HasKey("FilmId")
-                        .HasName("pk_film");
+                        .HasName("pk_flm");
 
                     b.ToTable("t_e_film_flm");
                 });
@@ -76,13 +75,13 @@ namespace ApiFilm.Migrations
                         .HasColumnName("not_note");
 
                     b.HasKey("UtilisateurId", "FilmId")
-                        .HasName("pk_notation");
+                        .HasName("pk_not");
 
                     b.HasIndex("FilmId");
 
                     b.ToTable("t_j_notation_not", t =>
                         {
-                            t.HasCheckConstraint("ck_not_note", "not_note BETWEEN 0 AND 5");
+                            t.HasCheckConstraint("ck_not_note", "not_note between 0 and 5");
                         });
                 });
 
@@ -96,12 +95,14 @@ namespace ApiFilm.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UtilisateurId"));
 
                     b.Property<string>("CodePostal")
-                        .HasColumnType("char(5)")
-                        .HasColumnName("utl_cp");
+                        .HasMaxLength(5)
+                        .HasColumnType("character(5)")
+                        .HasColumnName("utl_cp")
+                        .IsFixedLength();
 
                     b.Property<DateTime>("DateCreation")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("date")
                         .HasColumnName("utl_datecreation")
                         .HasDefaultValueSql("now()");
 
@@ -114,13 +115,16 @@ namespace ApiFilm.Migrations
                         .HasColumnName("utl_longitude");
 
                     b.Property<string>("Mail")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("utl_mail");
 
                     b.Property<string>("Mobile")
-                        .HasColumnType("char(10)")
-                        .HasColumnName("utl_mobile");
+                        .HasMaxLength(10)
+                        .HasColumnType("character(10)")
+                        .HasColumnName("utl_mobile")
+                        .IsFixedLength();
 
                     b.Property<string>("Nom")
                         .HasMaxLength(50)
@@ -156,11 +160,10 @@ namespace ApiFilm.Migrations
                         .HasColumnName("utl_ville");
 
                     b.HasKey("UtilisateurId")
-                        .HasName("pk_utilisateur");
+                        .HasName("pk_utl");
 
-                    b.HasIndex("Mail")
-                        .IsUnique()
-                        .HasDatabaseName("uq_utl_mail");
+                    b.HasIndex(new[] { "Mail" }, "uq_utl_mail")
+                        .IsUnique();
 
                     b.ToTable("t_e_utilisateur_utl");
                 });
@@ -172,14 +175,14 @@ namespace ApiFilm.Migrations
                         .HasForeignKey("FilmId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_notation_film");
+                        .HasConstraintName("fk_not_flm");
 
                     b.HasOne("ApiFilm.Models.EntityFramework.Utilisateur", "UtilisateurNotant")
                         .WithMany("NotesUtilisateur")
                         .HasForeignKey("UtilisateurId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_notation_utilisateur");
+                        .HasConstraintName("fk_not_utl");
 
                     b.Navigation("FilmNote");
 
