@@ -1,3 +1,4 @@
 dotnet tool install --global dotnet-ef --version 7.0.15
 
+dotnet-ef migrations add CreationBDFilmRatings --project ApiFilm
 dotnet-ef database update --project ApiFilm
